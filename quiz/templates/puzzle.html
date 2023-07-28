@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link href="{% static "css/styles.css" %}" rel="stylesheet" type="text/css">
+    <title>Songame - Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+        //change selectboxes to selectize mode to be searchable
+           $("select").select2();
+        });
+    </script>
+</head>
+<body>
+    <div style="margin: 0 auto; margin-top: 100px; width: 600px;">
+    <p> {{ task.statement }} </p>
+    {% if task.type == "zapunch" %}
+        <form method="post" action={{ action }}>
+            {% csrf_token %}
+            {% autoescape off %}
+            {{ task.part1 }}
+            <input name="user_answer" requiered autofocus />
+            {{ task.part2 }}
+            {% endautoescape %}
+            <input type="submit" value="Далее">
+        </form>
+    {% elif task.type == "emojilate" %}
+        <form method="post" action={{ action }}>
+            {% csrf_token %}
+            {% autoescape off %}
+            {{ task.text }}
+            <br>
+            <select name="user_answer" id="select_page" style="width:400px;" class="operator">
+                <option value="-1">Выберите песню</option>
+                {% for song in songs %}
+                    <option value="{{ song.song_id }}">{{ song.name }} by {{ song.authors }}</option>
+                {% endfor %} 
+            </select>
+            {% endautoescape %}
+            <input type="submit" value="Далее">
+        </form>
+    {% elif task.type == "neurocover" %}
+        <form method="post" action={{ action }}>
+            {% csrf_token %}
+            {% autoescape off %}
+            <img src="{{ task.image_path }}" alt="Cover by neural network" style="width:400px;">
+            <br>
+            <select name="user_answer" id="select_page" style="width:400px;" class="operator">
+                <option value="-1">Выберите песню</option>
+                {% for song in songs %}
+                    <option value="{{ song.song_id }}">{{ song.name }} by {{ song.authors }}</option>
+                {% endfor %} 
+            </select>
+            {% endautoescape %}
+            <input type="submit" value="Далее">
+        </form>
+    {% endif %}
+    </div>
+</body>
+</html>
